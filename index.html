@@ -8,64 +8,147 @@
     <style>
         body{
             background-color: pink;
-            /* will add more css here*/
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
         }
+        button{
+            border: 3px solid yellow;
+            font-size: 50px;
+            color: rgb(224, 212, 139);
+            background-color: deeppink;
+        }
+        .score{
+            font-weight: bold;
+        }
+            /* will add more css here*/
+        
     </style>
 </head>
 <body>
-   <!-- for now this is a console game with alerts. You'll change this into a browser game by adding
-- a label/input bar & button into the html & refeerncing them using doc.queryselector
-- a paragraph and code to keep track of the score 
-- go back to the MDn lesson hon how to customise your alerts?  -->
+    <header><h1>Ching Chang Walla <span style="font-size: 15px; font-style: italic; text-align: center;">(rock, paper, scissors)</span></h1></header>
+    <div class="buttons">
+        <button id="rock" value="rock">Rock</button>
+        <button id="paper" value="paper">Paper</button>
+        <button id="scis" value="scissors">Scissors</button>
+    </div>
+    <div class="score">
+        <p>Player Score: <span class="ps"></span></p>
+        <p>Computer Score: <span class="cs"></span></p>
+    </div>
+    <div class="results"></div>
+    
+    <script> 
+        const rock = document.querySelector('#rock');
+        const paper = document.querySelector('#paper');
+        const scis = document.querySelector('#scis');
+        const btns = document.querySelector('.buttons');
+        const results = document.querySelector('.results');
+        const playerScore = document.querySelector('.ps');
+        const compScore = document.querySelector('.cs');
 
-
-    <script>
-        let ccwResult = '';
+        let playerCount = 0;
+        let compCount = 0;
+        let round = 1;
+        let result = '';
+        let playerChoice = '';
 
         function playCCW() {
             const choice = ['rock', 'paper', 'scissors'];
-
-            function getPlayerChoice() {
-                const pick = prompt('Pick rock, paper or scissors:').toLowerCase();
-                return pick;
-            }
+            const computerChoice = getComputerChoice();
 
             function getComputerChoice() {
                 const random = Math.floor(Math.random()*choice.length);
                 return choice[random];
             }
 
-            const playerChoice = getPlayerChoice();
-            const computerChoice = getComputerChoice();
+            const draw = (`Round ${round} = Draw: You both chose ${computerChoice}`);
+            const lose = (`Round ${round} = Computer Won: ${computerChoice} beats ${playerChoice}`);
+            const win = (`Round ${round} = Player Won: ${playerChoice} beats ${computerChoice}`);
 
-            const resultDraw = (`Draw: You both chose ${computerChoice}`);
-            const resultLose = (`Computer Won: ${computerChoice} beats ${playerChoice}`);
-            const resultWin = (`Player Won: ${playerChoice} beats ${computerChoice}`);
-
-            if (playerChoice == 'rock' ||playerChoice == 'paper'||playerChoice == 'scissors') {
-                if (playerChoice == computerChoice) {
-                    alert('IT\'S A DRAW!');
-                    ccwResult = resultDraw;
-                    return ccwResult;
-                } else if ((playerChoice == 'rock' && computerChoice == 'paper') || (playerChoice == 'paper' && computerChoice == 'scissors') || (playerChoice == 'scissors' && computerChoice == 'rock')) {
-                    alert(`YOU LOSE! ${computerChoice} beats ${playerChoice}`)
-                    ccwResult =resultLose;
-                    return ccwResult;
-                } else {
-                    alert(`YOU WIN!! ${playerChoice} beats ${computerChoice}`);
-                    ccwResult =resultWin;
-                    return ccwResult;
-                }
+            if (playerChoice == computerChoice) {
+                result = draw;
+                playerScore.textContent = playerCount+= 1;
+                compScore.textContent = compCount += 1;
+                gameLog = document.createElement('p'); 
+                gameLog.textContent = result; 
+                results.appendChild(gameLog);
+            } else if ((playerChoice == 'rock' && computerChoice == 'paper') || (playerChoice == 'paper' && computerChoice == 'scissors') || (playerChoice == 'scissors' && computerChoice == 'rock')) {
+                result = lose;
+                compScore.textContent = compCount += 1;
+                gameLog = document.createElement('p'); 
+                gameLog.textContent = result; 
+                results.appendChild(gameLog);
             } else {
-            alert('That\'s not an option hun')
+                result = win;
+                playerScore.textContent = playerCount+= 1;
+                gameLog = document.createElement('p'); 
+                gameLog.textContent = result; 
+                results.appendChild(gameLog);
+            }
+
+        }
+/* 1 need to learn how to remove endOfGame. so far remove() is unrecognised and btn.removeChild disables the whole function 
+2 need to learn how to display results without clicking a 6th time*/
+        function fullGame() {
+            if (playerCount < 5 && compCount < 5) {
+                playCCW();
+                round++
+            } else {
+                let endOfGame = document.createElement('div');
+                if (playerCount < compCount) {
+                    endOfGame.textContent = `!!GAME OVER!! YOU LOSE! Computer Wins ${compCount} : ${playerCount}`
+                    endOfGame.style.backgroundColor = 'red';
+                } else if (playerCount > compCount) {
+                    endOfGame.textContent = `!GAME OVER! !!!!YOU WIN!!!! ${playerCount} : ${compCount}`;
+                    endOfGame.style.backgroundColor = 'yellowgreen';
+                } else {
+                    endOfGame.textContent = `!GAME OVER! It\'s' a Draw ${playerCount} : ${compCount}`;
+                    endOfGame.style.backgroundColor = 'yellow';
+                }
+
+                btns.appendChild(endOfGame);
+                setGameOver();
             }
         }
-        //this allows 5 rounds of CCW and puts the result in the console
-        function fullGame() {
-            for (let round = 1; round<6; round++) {
-                playCCW();
-                console.log(`Round: ${round} = ${ccwResult}`);
-            }
+      
+
+        rock.addEventListener('click', () => {
+            playerChoice = 'rock';
+        });
+        rock.addEventListener('click', fullGame);
+
+        paper.addEventListener('click', () => {
+            playerChoice = 'paper';
+        });
+        paper.addEventListener('click', fullGame);
+
+        scis.addEventListener('click', () => {
+            playerChoice = 'scissors';
+        });
+        scis.addEventListener('click', fullGame);
+
+        function setGameOver() {
+            rock.disabled = true;
+            paper.disabled = true;
+            scis.disabled = true;
+            resetButton = document.createElement('button'); 
+            resetButton.textContent = 'Start New Game'; 
+            document.body.append(resetButton);
+            resetButton.addEventListener('click', resetGame);
+        }
+
+        function resetGame() {
+            round = 1;
+            playerCount = 0;
+            compCount = 0;
+
+            resetButton.parentNode.removeChild(resetButton); 
+
+            rock.disabled = false;
+            paper.disabled = false;
+            scis.disabled = false;
+            results.textContent = '';
+            playerScore.textContent = '';
+            compScore.textContent = '';
         }
     </script>
 </body>
