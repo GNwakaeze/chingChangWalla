@@ -84,16 +84,15 @@
                 gameLog.textContent = result; 
                 results.appendChild(gameLog);
             }
-
         }
-/* 1 need to learn how to remove endOfGame. so far remove() is unrecognised and btn.removeChild disables the whole function 
-2 need to learn how to display results without clicking a 6th time*/
+/* 1 need to learn how to display results without clicking a 6th time*/
         function fullGame() {
             if (playerCount < 5 && compCount < 5) {
                 playCCW();
                 round++
             } else {
                 let endOfGame = document.createElement('div');
+                endOfGame.setAttribute('style', 'width: 483px; height: 30px; border: 3px solid yellow; text-align: center; font-weight: bold; font-size: large')
                 if (playerCount < compCount) {
                     endOfGame.textContent = `!!GAME OVER!! YOU LOSE! Computer Wins ${compCount} : ${playerCount}`
                     endOfGame.style.backgroundColor = 'red';
@@ -109,7 +108,6 @@
                 setGameOver();
             }
         }
-      
 
         rock.addEventListener('click', () => {
             playerChoice = 'rock';
@@ -132,7 +130,8 @@
             scis.disabled = true;
             resetButton = document.createElement('button'); 
             resetButton.textContent = 'Start New Game'; 
-            document.body.append(resetButton);
+            resetButton.style.width = '488px';
+            btns.appendChild(resetButton);
             resetButton.addEventListener('click', resetGame);
         }
 
@@ -143,12 +142,15 @@
 
             resetButton.parentNode.removeChild(resetButton); 
 
-            rock.disabled = false;
-            paper.disabled = false;
-            scis.disabled = false;
             results.textContent = '';
             playerScore.textContent = '';
             compScore.textContent = '';
+
+            rock.disabled = false;
+            paper.disabled = false;
+            scis.disabled = false;
+
+            btns.removeChild(btns.lastElementChild)
         }
     </script>
 </body>
